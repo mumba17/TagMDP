@@ -119,16 +119,13 @@ def rewardFunctionRun():
     reward = -100
     for i in range(num_rows):
         for j in range(num_columns):
+            distance_from_tagger = abs(i - locationy) + abs(j - locationx)
             if isWall(i,j):
                 rewardListRun[i][j] = -50
             else:
-                # Encourage the AI to stay away from the Tagger
-                distance_from_tagger = abs(i - locationy) + abs(j - locationx)
-                if distance_from_tagger > 0:
-                    rewardListRun[i][j] = reward / distance_from_tagger
-                else:
-                    rewardListRun[i][j] = reward
+                rewardListRun[i][j] = reward / (distance_from_tagger + 1e-6)
     return rewardListRun
+
 
 def Terminal():
     locationyR, locationxR = find_agent_location("R")
@@ -159,18 +156,20 @@ def Q_value_Tag(z,gamma=1):
                 Q_sa[i][j] = rewardListTagger[i][j] + gamma * max(Q_sa[i-1][j], Q_sa[i+1][j], Q_sa[i][j-1], Q_sa[i][j+1])
     return Q_sa
 
-def bestAction(agent,Q_sa,previous, epsilon=0.1):
+def bestAction(agent,Q_sa,previous, epsilon=0.05, alpha=0.05):
     i,j = find_agent_location(agent)
     Top = -999999
     bestMove = 0
-    cantRandom = True
-    if np.random.uniform() < epsilon:
+    if np.random.uniform() > alpha:
+        bestMove = None
+        print(f'The agent {agent} has chosen an awaitening move: {bestMove}, Turn = {TurnCounter}')
+        return bestMove
+    elif np.random.uniform() < epsilon:
         i = np.random.randint(len(list_of_actions))
         if ActCords(list_of_actions[i],agent,previous) != False:
             bestMove = list_of_actions[i]
-            cantRandom = False
             print(f'The agent {agent} has chosen a random exploration move: {bestMove}, Turn = {TurnCounter}')
-    if cantRandom:
+    else:
         for act in list_of_actions:
             if ActCords(act,agent,previous) != False:
                 y,x = ActCords(act,agent,previous)
