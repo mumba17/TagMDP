@@ -156,7 +156,7 @@ def Q_value_Tag(z,gamma=1):
                 Q_sa[i][j] = rewardListTagger[i][j] + gamma * max(Q_sa[i-1][j], Q_sa[i+1][j], Q_sa[i][j-1], Q_sa[i][j+1])
     return Q_sa
 
-def bestAction(agent,Q_sa,previous, epsilon=0.05, alpha=0.05):
+def bestAction(agent,Q_sa,previous, epsilon=0.05, alpha=0.95):
     i,j = find_agent_location(agent)
     Top = -999999
     bestMove = 0
