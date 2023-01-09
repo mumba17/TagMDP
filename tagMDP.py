@@ -93,7 +93,6 @@ def ActCords(action,agent,previous):
             return (locationy,locationx-1)
     return False
 
-
 def rewardFunctionTag():
     global rewardListTagger
     rewardListTagger = np.zeros((num_rows,num_columns))
@@ -129,14 +128,12 @@ def rewardFunctionRun():
                     rewardListRun[i][j] = reward // distance_from_tagger
     return rewardListRun
 
-
 def Terminal():
     locationyR, locationxR = find_agent_location("R")
     locationyT, locationxT = find_agent_location("T")
     if abs(locationyR - locationyT) + abs(locationxR - locationxT) == 1:
         print("Player Tag has won the game!")
         return True
-
 
 def Q_value_Run(z,gamma=1):
     Q_sa = np.zeros([num_rows, num_columns])
@@ -152,7 +149,6 @@ def Q_value_Run(z,gamma=1):
                 else:
                     Q_sa[i][j] = rewardListRun[i][j] + gamma * max(Q_sa[i-1][j], Q_sa[i+1][j], Q_sa[i][j-1], Q_sa[i][j+1])
     return Q_sa
-
 
 def Q_value_Tag(z,gamma=1):
     Q_sa = np.zeros([num_rows, num_columns])
@@ -177,13 +173,13 @@ def bestAction(agent,Q_sa,previous, epsilon=0.05, alpha=0.95):
     lowestDistance = 10000
     if np.random.uniform() > alpha:
         bestMove = None
-        # print(f'The agent {agent} has chosen an awaitening move: {bestMove}, Turn = {TurnCounter}')
+        print(f'The agent {agent} has chosen an awaitening move: {bestMove}, Turn = {TurnCounter}')
         return bestMove
     if np.random.uniform() < epsilon:
         i = np.random.randint(len(list_of_actions))
         if ActCords(list_of_actions[i],agent,previous) != False:
             bestMove = list_of_actions[i]
-            # print(f'The agent {agent} has chosen a random exploration move: {bestMove}, Turn = {TurnCounter}')
+            print(f'The agent {agent} has chosen a random exploration move: {bestMove}, Turn = {TurnCounter}')
             return bestMove
     for act in list_of_actions:
         if ActCords(act,agent,previous) != False:
@@ -203,11 +199,11 @@ def bestAction(agent,Q_sa,previous, epsilon=0.05, alpha=0.95):
                     if highestDistance > abs(abs(i-y) - a) + abs(abs(j-x) - b):
                         if current == Top:
                             bestMove = act
-    # print(f'The agent {agent} has chosen the best move: {bestMove}, Turn = {TurnCounter}, Q_sa = {Top:.3f}')
+    print(f'The agent {agent} has chosen the best move: {bestMove}, Turn = {TurnCounter}, Q_sa = {Top:.3f}')
     return bestMove
 
-def printMap(game,turnCounter):
-    if turnCounter % 10 == 0:
+def printMap(game,turnCounter=10):
+    if turnCounter > 0:
         for row in game:
             print(' '.join(row))
 
@@ -237,8 +233,8 @@ def Game(maxTurns,z,m,n):
             previousActT = bestAct
             bestAct = None
         TurnCounter += 1
-        # print("-"*(n*2))
-        # printMap(game_map,TurnCounter)
+        print("-"*(n*2))
+        printMap(game_map,TurnCounter)
         if TurnCounter == maxTurns:
             print("Player Run has won the game!")
             return 1
@@ -303,4 +299,4 @@ def Experiment(maxTurns=75,z=1,m=11,n=11,wallprob=0.2):
     return score
 
 # print(Experiment())
-Experiment()
+main()
